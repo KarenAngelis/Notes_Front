@@ -8,18 +8,15 @@ function AuthProvider({ children }) {
   const [data, setData] = useState({});
 
    async function signIn({ email, password }) {
-    
-    
     try {
     const response = await api.post("/sessions", { email, password });
     const { token, user } = response.data;
 
     localStorage.setItem("@RocketNotes:user", JSON.stringify(user));
-      localStorage.setItem("@RocketNotes:token", token);
+    localStorage.setItem("@RocketNotes:token", token);
 
-      api.defaults.headers.authorization = `Bearer ${token}`;
-      setData({ token, user });
-   
+    api.defaults.headers.common["Authorization"] = `Bearer ${ token}`;
+    setData({ token, user });
     } catch (error) {
       if(error.response) {
         alert(error.response.data.message);
@@ -36,12 +33,40 @@ function AuthProvider({ children }) {
     setData({});
   }
 
+    async function updateProfile({ user, avatarFile }) {
+      try{  
+
+        if(avatarFile) {
+          const fileUploadForm = new FormData();
+          fileUploadForm.append("avatar", avatarFile);
+
+          const response = await api.patch("/users/avatar", fileUploadForm);
+          user.avatar = response.data.avatar;
+        }
+
+        // API update
+        await api.put("/users", user);
+        localStorage.setItem("@RocketNotes:user", JSON.stringify(user));
+
+        setData({ user, token: data.token });
+        alert("Perfil atualizado!");
+
+      }catch (error) {
+        if (error.response) {
+          alert(error.response.data.message);
+        } else {
+          alert("Não foi possível atualizar o perfil.");
+        }
+      }
+    }
+
+
     useEffect(() => {
     const user = localStorage.getItem("@RocketNotes:user");
     const token = localStorage.getItem("@RocketNotes:token");
   
     if(user && token ) {
-      api.defaults.headers.authorization = `Bearer ${ token}`;
+      api.defaults.headers.common["Authorization"] = `Bearer ${ token}`;
       setData({ token, user: JSON.parse(user) });
     }
   }, []);
@@ -50,6 +75,7 @@ function AuthProvider({ children }) {
   <AuthContext.Provider value={{ 
     signIn, 
     signOut,
+    updateProfile,
     user: data.user 
     }}
     >
