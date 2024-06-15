@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
-import { FiPlus } from 'react-icons/fi'
-import { Container, Brand, Menu, Search, Content, NewNote } from './styles'
+import { FiPlus } from 'react-icons/fi';
+import { Container, Brand, Menu, Search, Content, NewNote } from './styles';
 import { useNavigate } from 'react-router-dom';
 
-import { Note } from '../../components/Note'
-import { Input } from '../../components/Input'
-import { Header } from '../../components/Header'
-import { Section } from '../../components/Section'
-import { ButtonText } from '../../components/ButtonText'
-import { api } from '../../service/api'
+import { Note } from '../../components/Note';
+import { Input } from '../../components/Input';
+import { Header } from '../../components/Header';
+import { Section } from '../../components/Section';
+import { ButtonText } from '../../components/ButtonText';
+import { api } from '../../service/api';
 
 export function Home() {
   const [tags, setTags] = useState([]);
@@ -25,23 +25,23 @@ export function Home() {
 
     const alreadySelected = tagsSelected.includes(tagName);
 
-      if (alreadySelected) {
-        const filteredTags = tagsSelected.filter(tag => tag !== tagName);
-        setTagsSelected(filteredTags);
-    } else { }
-    
-    setTagsSelected(prevState => [...prevState, tagName]);
+    if (alreadySelected) {
+      const filteredTags = tagsSelected.filter(tag => tag !== tagName);
+      setTagsSelected(filteredTags);
+    } else {
+      setTagsSelected(prevState => [...prevState, tagName]);
+    }
   }
 
-    function handleDetails(id) {
-      navigate(`/details/${id}`);
-    }
+  function handleDetails(id) {
+    navigate(`/details/${id}`);
+  }
 
   useEffect(() => {
-    async function fetchTags () {
-        const response = await api.get('/tags');
-        setTags(response.data);
-  };
+    async function fetchTags() {
+      const response = await api.get('/tags');
+      setTags(response.data);
+    }
     fetchTags();
   }, []);
 
@@ -50,10 +50,9 @@ export function Home() {
       const response = await api.get(`/notes?title=${search}&tags=${tagsSelected}`);
       setNotes(response.data);
     }
-
     fetchNotes();
-    }, [tagsSelected, search]);
-  
+  }, [tagsSelected, search]);
+
   return (
     <Container>
       <Brand>
@@ -63,45 +62,41 @@ export function Home() {
       <Header />
 
       <Menu>
-      <li><ButtonText 
-      title="Todos" 
-      onClick={() => handleTagSelected("all")}
-      isactive={tagsSelected.length === 0}
-       />
-      </li>
-
-        {
-        tags && tags.map(tag => (
-        <li key={String(tag.id)}>
-          <ButtonText 
-          title={tag.name} />
-          onclick={() => handleTagSelected(tag.name)}
-          isActive={tagsSelected.includes(tag.name)}
+        <li>
+          <ButtonText
+            title="Todos"
+            onClick={() => handleTagSelected("all")}
+            isActive={tagsSelected.length === 0}
+          />
+        </li>
+        {tags && tags.map(tag => (
+          <li key={String(tag.id)}>
+            <ButtonText
+              title={tag.name}
+              onClick={() => handleTagSelected(tag.name)}
+              isActive={tagsSelected.includes(tag.name)}
+            />
           </li>
         ))}
-       
       </Menu>
 
       <Search>
-        <Input 
-        placeholder="Pesquisar pelo título" 
-        onChange={e => setSearch(e.target.value)}
-
+        <Input
+          placeholder="Pesquisar pelo título"
+          onChange={e => setSearch(e.target.value)}
+          aria-label="Pesquisar pelo título"
         />
       </Search>
 
       <Content>
         <Section title="Minhas notas">
-          {
-            notes.map(note => (
-            <Note 
-            key={String(note.id)}
-            data={note}
-            onClick={() => handleDetails(note.id)}
-   
-          />
-        ))
-        }
+          {notes.map(note => (
+            <Note
+              key={String(note.id)}
+              data={note}
+              onClick={() => handleDetails(note.id)}
+            />
+          ))}
         </Section>
       </Content>
 
@@ -110,5 +105,5 @@ export function Home() {
         Criar nota
       </NewNote>
     </Container>
-  )
+  );
 }

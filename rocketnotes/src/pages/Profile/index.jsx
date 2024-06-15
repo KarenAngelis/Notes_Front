@@ -1,4 +1,4 @@
-import { useState } from'react'
+import { useState } from 'react'
 import { FiArrowLeft, FiUser, FiMail, FiLock, FiCamera } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../hooks/auth'
@@ -10,17 +10,15 @@ import avatarPlaceholder from '../../assets/avatar_placeholder.svg'
 
 import { Container, Form, Avatar } from "./styles";
 
-
 export function Profile() {
   const { user, updateProfile } = useAuth();
 
+  const avatarUrl = user.avatar ? `${api.defaults.baseURL}/files/${user.avatar}` : avatarPlaceholder;
+
   const [name, setName] = useState(user.name)
   const [email, setEmail] = useState(user.email)
-  const [passwordOld, setPasswordOld] = useState( )
-  const [passwordNew, setPasswordNew] = useState( )
-
-  const avatarUrl = user.avatar ? `${api.defaults.baseURL}/files/${user.avatar}` : avatarPlaceholder; 
-
+  const [passwordOld, setPasswordOld] = useState('')
+  const [passwordNew, setPasswordNew] = useState('')
   const [avatar, setAvatar] = useState(avatarUrl);
   const [avatarFile, setAvatarFile] = useState(null);
 
@@ -32,18 +30,18 @@ export function Profile() {
       old_password: passwordOld,
     }
 
-    const userUpdated = Object.assign( updated, user );
+    const userUpdated = Object.assign(user, updated);
 
     await updateProfile({ user: userUpdated, avatarFile })
   }
 
-    function handleChangeAvatar(e) {
-      const file = e.target.files[0];
-      setAvatarFile(file);
+  function handleChangeAvatar(e) {
+    const file = e.target.files[0];
+    setAvatarFile(file);
 
-      const imagePreview = URL.createObjectURL(file);
-        setAvatar(imagePreview);
-    }
+    const imagePreview = URL.createObjectURL(file);
+    setAvatar(imagePreview);
+  }
 
   return (
     <Container>
@@ -60,7 +58,7 @@ export function Profile() {
             alt="Foto do usuário"
           />
 
-          <label htmlFor="placeholder">
+          <label htmlFor="avatar">
             <FiCamera />
 
             <input
@@ -76,7 +74,7 @@ export function Profile() {
           type="text"
           icon={FiUser}
           value={name}
-          onchange={e => setName(e.target.value)}
+          onChange={e => setName(e.target.value)}
         />
 
         <Input
@@ -84,21 +82,21 @@ export function Profile() {
           type="text"
           icon={FiMail}
           value={email}
-          onchange={e => setEmail(e.target.value)}
+          onChange={e => setEmail(e.target.value)}
         />
 
         <Input
           placeholder="Senha atual"
           type="password"
           icon={FiLock}
-          onchange={e => setPasswordOld(e.target.value)}
+          onChange={e => setPasswordOld(e.target.value)}
         />
 
         <Input
-          placeholder="Nova atual"
+          placeholder="Nova senha"
           type="password"
           icon={FiLock}
-          onchange={e => setPasswordNew(e.target.value)}
+          onChange={e => setPasswordNew(e.target.value)}
         />
 
         <Button title="Salvar" onClick={handleUpdate} />
