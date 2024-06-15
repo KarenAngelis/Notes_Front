@@ -60,7 +60,7 @@ export function New() {
       tags
     })
     alert('Nota criada com sucesso!')
-    navigate("/")
+    navigate(-1)
   }
     
   return (
